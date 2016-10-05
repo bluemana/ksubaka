@@ -1,0 +1,11 @@
+# Ignore OS X directory files
+.DS_Store
+
+# Ignore Eclipse configuration files
+.classpath
+.project
+.settings
+
+# Ignore target compilation directories
+bin
+target
