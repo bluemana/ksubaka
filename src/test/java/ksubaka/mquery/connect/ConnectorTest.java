@@ -30,7 +30,7 @@ public class ConnectorTest {
 		String jsonResponse = readResource("ConnectorTest_movies_NoMatch_EmptyList.json");
 		
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
-		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getSearchMovieUri(API_KEY, "")))
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getSearchMovieUri(API_KEY, "", 1)))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(jsonResponse, MediaType.APPLICATION_JSON));
 		
@@ -42,26 +42,61 @@ public class ConnectorTest {
 	@Test
 	public void movies_Match_Retrieved() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-		String jsonResponse1 = readResource("ConnectorTest_movies_Match_Retrieved_1.json");
-		String jsonResponse2 = readResource("ConnectorTest_movies_Match_Retrieved_2.json");
-		String jsonResponse3 = readResource("ConnectorTest_movies_Match_Retrieved_3.json");
+		String jsonResponse1 = readResource("ConnectorTest_movies_Match_Retrieved.json");
+		String movie87CreditsJson = readResource("movie_87_credits.json");
+		String movie89CreditsJson = readResource("movie_89_credits.json");
 		
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
-		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getSearchMovieUri(API_KEY, "indiana jones")))
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getSearchMovieUri(API_KEY, "indiana jones", 1)))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(jsonResponse1, MediaType.APPLICATION_JSON));
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getMovieCreditsUri(API_KEY, 87L)))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-			.andRespond(MockRestResponseCreators.withSuccess(jsonResponse2, MediaType.APPLICATION_JSON));
+			.andRespond(MockRestResponseCreators.withSuccess(movie87CreditsJson, MediaType.APPLICATION_JSON));
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getMovieCreditsUri(API_KEY, 89L)))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-			.andRespond(MockRestResponseCreators.withSuccess(jsonResponse3, MediaType.APPLICATION_JSON));
+			.andRespond(MockRestResponseCreators.withSuccess(movie89CreditsJson, MediaType.APPLICATION_JSON));
 		
 		Connector connector = new Connector(restTemplate, API_KEY);
 		List<Movie> movies = connector.getMovies("indiana jones");
 		List<Movie> expected = new ArrayList<Movie>();
 		expected.add(new Movie("Indiana Jones and the Temple of Doom", "1984-05-23", "Steven Spielberg"));
 		expected.add(new Movie("Indiana Jones and the Last Crusade", "1989-05-24", "Steven Spielberg"));
+		Assert.assertTrue(movies.equals(expected));
+	}
+	
+	@Test
+	public void movies_MultiplePageMatch_Retrieved() throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String page1Json = readResource("ConnectorTest_movies_MultiplePageMatch_Retrieved_Page1.json");
+		String page2Json = readResource("ConnectorTest_movies_MultiplePageMatch_Retrieved_Page2.json");
+		String movie85CreditsJson = readResource("movie_85_credits.json");
+		String movie87CreditsJson = readResource("movie_87_credits.json");
+		String movie89CreditsJson = readResource("movie_89_credits.json");
+		
+		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getSearchMovieUri(API_KEY, "indiana jones", 1)))
+			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+			.andRespond(MockRestResponseCreators.withSuccess(page1Json, MediaType.APPLICATION_JSON));
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getMovieCreditsUri(API_KEY, 89L)))
+			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+			.andRespond(MockRestResponseCreators.withSuccess(movie89CreditsJson, MediaType.APPLICATION_JSON));
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getMovieCreditsUri(API_KEY, 87L)))
+			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+			.andRespond(MockRestResponseCreators.withSuccess(movie87CreditsJson, MediaType.APPLICATION_JSON));
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getSearchMovieUri(API_KEY, "indiana jones", 2)))
+			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+			.andRespond(MockRestResponseCreators.withSuccess(page2Json, MediaType.APPLICATION_JSON));
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(Connector.getMovieCreditsUri(API_KEY, 85L)))
+			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+			.andRespond(MockRestResponseCreators.withSuccess(movie85CreditsJson, MediaType.APPLICATION_JSON));
+		
+		Connector connector = new Connector(restTemplate, API_KEY);
+		List<Movie> movies = connector.getMovies("indiana jones");
+		List<Movie> expected = new ArrayList<Movie>();
+		expected.add(new Movie("Indiana Jones and the Last Crusade", "1989-05-24", "Steven Spielberg"));
+		expected.add(new Movie("Indiana Jones and the Temple of Doom", "1984-05-23", "Steven Spielberg"));
+		expected.add(new Movie("Raiders of the Lost Ark", "1981-06-12", "Steven Spielberg"));
 		Assert.assertTrue(movies.equals(expected));
 	}
 	

@@ -26,30 +26,45 @@ public class Connector {
 	
 	public List<Movie> getMovies(String searchText) {
 		List<Movie> movies = new ArrayList<Movie>();
-		SearchMoviesResponse searchMoviesResponse = restTemplate.getForObject(getSearchMovieUri(apiKey, searchText), SearchMoviesResponse.class);
-		for (SearchMoviesResult searchMoviesResult : searchMoviesResponse.getResults()) {
-			Movie movie = null;
-			MovieCreditsResponse movieCreditResponse = restTemplate.getForObject(getMovieCreditsUri(apiKey, searchMoviesResult.getId()), MovieCreditsResponse.class);
-			for (CrewResult crewResult : movieCreditResponse.getCrew()) {
-				if (crewResult.getJob().equals("Director")) {
-					movie = new Movie(searchMoviesResult.getTitle(),
-							searchMoviesResult.getReleaseDate(), crewResult.getName());
-					break;
+		int pageCount = 1;
+		int pageTotal = 1;
+		int movieCount = 1;
+		int movieTotal = 0;
+		while (pageCount <= pageTotal) {
+			SearchMoviesResponse searchMoviesResponse = restTemplate.getForObject(
+				getSearchMovieUri(apiKey, searchText, pageCount), SearchMoviesResponse.class);
+			pageTotal = searchMoviesResponse.getPageTotal();
+			movieTotal = searchMoviesResponse.getResultTotal();
+			for (SearchMoviesResult searchMoviesResult : searchMoviesResponse.getResults()) {
+				LOGGER.info(String.format("Retrieving movie %d of %d...", movieCount, movieTotal));
+				Movie movie = null;
+				MovieCreditsResponse movieCreditResponse = restTemplate.getForObject(getMovieCreditsUri(apiKey, searchMoviesResult.getId()), MovieCreditsResponse.class);
+				for (CrewResult crewResult : movieCreditResponse.getCrew()) {
+					if (crewResult.getJob().equals("Director")) {
+						movie = new Movie(searchMoviesResult.getTitle(),
+								searchMoviesResult.getReleaseDate(), crewResult.getName());
+						break;
+					}
 				}
+				if (movie == null) {
+					movie = new Movie(searchMoviesResult.getTitle(),
+							searchMoviesResult.getReleaseDate(), null);
+				}
+				movies.add(movie);
+				movieCount++;
 			}
-			if (movie == null) {
-				movie = new Movie(searchMoviesResult.getTitle(),
-						searchMoviesResult.getReleaseDate(), null);
-			}
-			LOGGER.info(movie.toString());
-			movies.add(movie);
-		}
+			pageCount++;
+		};
 		return movies;
 	}
 	
-	public static URI getSearchMovieUri(String apiKey, String searchText) {
+	public static URI getSearchMovieUri(String apiKey, String searchText, int page) {
 		try {
-			String queryString = UriUtils.encodeQuery("api_key=" + apiKey + "&query=\"" + searchText + "\"", "utf-8");
+			String queryString = UriUtils.encodeQuery(
+				"api_key=" + apiKey +
+				"&query=\"" + searchText + "\"" +
+				"&page=" + page,
+				"utf-8");
 			return URI.create(BASE_URI + "search/movie?" + queryString);
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException(e);
