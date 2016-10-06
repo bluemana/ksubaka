@@ -9,3 +9,6 @@
 # Ignore target compilation directories
 bin
 target
+
+# Ignore environment configuration
+config.properties
