@@ -31,7 +31,7 @@ public class TmdbConnector {
 		int pageTotal = 1;
 		while (pageCount <= pageTotal) {
 			SearchResults searchResults = restTemplate.getForObject(
-				getSearchMovieUri(apiKey, searchText, pageCount), SearchResults.class);
+				getSearchUri(apiKey, searchText, pageCount), SearchResults.class);
 			pageTotal = searchResults.getPageTotal();
 			int movieTotal = searchResults.getResultTotal();
 			for (SearchResult searchResult : searchResults.getResults()) {
@@ -56,7 +56,7 @@ public class TmdbConnector {
 		return movies;
 	}
 	
-	public static URI getSearchMovieUri(String apiKey, String searchText, int page) {
+	public static URI getSearchUri(String apiKey, String searchText, int page) {
 		try {
 			String queryString = UriUtils.encodeQuery(
 				"api_key=" + apiKey +

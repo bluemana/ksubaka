@@ -22,13 +22,13 @@ public class OmdbApiConnector {
 	
 	public List<Movie> getMovies(String searchText) {
 		List<Movie> movies = new ArrayList<Movie>();
-		SearchResults searchResponse = restTemplate.getForObject(getSearchUri(searchText), SearchResults.class);
-		if (searchResponse.getSuccessful()) {
-			for (SearchResult result : searchResponse.getResults()) {
-				String imdbId = result.getImdbId();
+		SearchResults searchResults = restTemplate.getForObject(getSearchUri(searchText), SearchResults.class);
+		if (searchResults.getSuccessful()) {
+			for (SearchResult searchResult : searchResults.getResults()) {
+				String imdbId = searchResult.getImdbId();
 				MovieResponse movieResponse = restTemplate.getForObject(getMovieUri(imdbId), MovieResponse.class);
 				String director = movieResponse.getDirector();
-				movies.add(new Movie(result.getTitle(), result.getYear(), director));
+				movies.add(new Movie(searchResult.getTitle(), searchResult.getYear(), director));
 			}
 		}
 		return movies;

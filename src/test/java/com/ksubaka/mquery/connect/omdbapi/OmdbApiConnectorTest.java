@@ -24,12 +24,12 @@ public class OmdbApiConnectorTest {
 	@Test
 	public void movies_NoMatch_EmptyList() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-		String jsonResponse = readResource("search_not_found.json");
+		String responseJson = readResource("search_not_found.json");
 		
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(OmdbApiConnector.getSearchUri("")))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-			.andRespond(MockRestResponseCreators.withSuccess(jsonResponse, MediaType.APPLICATION_JSON));
+			.andRespond(MockRestResponseCreators.withSuccess(responseJson, MediaType.APPLICATION_JSON));
 		
 		OmdbApiConnector connector = new OmdbApiConnector(restTemplate);
 		List<Movie> movies = connector.getMovies("");

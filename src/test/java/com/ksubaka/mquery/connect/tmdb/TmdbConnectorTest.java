@@ -27,12 +27,12 @@ public class TmdbConnectorTest {
 	@Test
 	public void movies_NoMatch_EmptyList() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-		String jsonResponse = readResource("search_results_no_match.json");
+		String responseJson = readResource("search_results_no_match.json");
 		
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
-		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchMovieUri(API_KEY, "", 1)))
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchUri(API_KEY, "", 1)))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-			.andRespond(MockRestResponseCreators.withSuccess(jsonResponse, MediaType.APPLICATION_JSON));
+			.andRespond(MockRestResponseCreators.withSuccess(responseJson, MediaType.APPLICATION_JSON));
 		
 		TmdbConnector connector = new TmdbConnector(restTemplate, API_KEY);
 		List<Movie> movies = connector.getMovies("");
@@ -42,14 +42,14 @@ public class TmdbConnectorTest {
 	@Test
 	public void movies_Match_Retrieved() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-		String jsonResponse1 = readResource("search_results_page_1_of_1.json");
+		String searchResultsJson = readResource("search_results_page_1_of_1.json");
 		String movie87CreditsJson = readResource("movie_87_credits.json");
 		String movie89CreditsJson = readResource("movie_89_credits.json");
 		
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
-		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchMovieUri(API_KEY, "indiana jones", 1)))
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchUri(API_KEY, "indiana jones", 1)))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-			.andRespond(MockRestResponseCreators.withSuccess(jsonResponse1, MediaType.APPLICATION_JSON));
+			.andRespond(MockRestResponseCreators.withSuccess(searchResultsJson, MediaType.APPLICATION_JSON));
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getMovieCreditsUri(API_KEY, 87L)))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(movie87CreditsJson, MediaType.APPLICATION_JSON));
@@ -75,7 +75,7 @@ public class TmdbConnectorTest {
 		String movie89CreditsJson = readResource("movie_89_credits.json");
 		
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
-		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchMovieUri(API_KEY, "indiana jones", 1)))
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchUri(API_KEY, "indiana jones", 1)))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(page1Json, MediaType.APPLICATION_JSON));
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getMovieCreditsUri(API_KEY, 89L)))
@@ -84,7 +84,7 @@ public class TmdbConnectorTest {
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getMovieCreditsUri(API_KEY, 87L)))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(movie87CreditsJson, MediaType.APPLICATION_JSON));
-		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchMovieUri(API_KEY, "indiana jones", 2)))
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchUri(API_KEY, "indiana jones", 2)))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(page2Json, MediaType.APPLICATION_JSON));
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getMovieCreditsUri(API_KEY, 85L)))
