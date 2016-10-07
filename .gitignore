@@ -12,3 +12,5 @@ target
 
 # Ignore environment configuration
 config.properties
+log4j2.xml
+

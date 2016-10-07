@@ -1,10 +1,10 @@
 package com.ksubaka.mquery;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -13,15 +13,17 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
 
 import com.ksubaka.mquery.connect.Connector;
 
 public class Main {
-
-	private static final Logger LOGGER = Logger.getLogger(Main.class.getCanonicalName());
 	
-	public static void main(String[] args) throws Exception {
+	private static final Logger LOGGER = LogManager.getLogger(Main.class);
+	
+	public static void main(String[] args) {
 		Options options = getOptions();
 		CommandLineParser cmdLineParser = new DefaultParser();
 		try {
@@ -30,16 +32,24 @@ public class Main {
 				printUsage(options);
 			} else {
 				String searchString = getSearchString(cmdLine);
-				LOGGER.info("Searching for \"" + searchString + "\"...");
+				LOGGER.info("Searching for \"{}\"...", searchString);
 				Properties config = new Properties();
 				try (InputStream input = new FileInputStream("config.properties")) {
 					config.load(input);
 					String apiKey = config.getProperty("api_key");
-					Connector connector = new Connector(new RestTemplate(), apiKey);
-					List<Movie> movies = connector.getMovies(searchString);
-					for (Movie movie : movies) {
-						System.out.println(format(movie));
+					if (apiKey != null) {
+						Connector connector = new Connector(new RestTemplate(), apiKey);
+						List<Movie> movies = connector.getMovies(searchString);
+						for (Movie movie : movies) {
+							System.out.println(format(movie));
+						}
+					} else {
+						LOGGER.error("api_key entry not found in config.properties");
+						System.exit(1);
 					}
+				} catch (IOException e) {
+					LOGGER.error("An I/O error occured while accessing config.properties", e);
+					System.exit(1);
 				}
 			}
 		} catch (ParseException e) {

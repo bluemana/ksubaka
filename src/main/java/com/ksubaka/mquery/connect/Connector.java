@@ -4,8 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriUtils;
 
@@ -13,7 +14,7 @@ import com.ksubaka.mquery.Movie;
 
 public class Connector {
 	
-	private static final Logger LOGGER = Logger.getLogger(Connector.class.getCanonicalName());
+	private static final Logger LOGGER = LogManager.getLogger(Connector.class);
 	private static final String BASE_URI = "http://api.themoviedb.org/3/";
 	
 	private final RestTemplate restTemplate;
@@ -36,7 +37,7 @@ public class Connector {
 			pageTotal = searchMoviesResponse.getPageTotal();
 			movieTotal = searchMoviesResponse.getResultTotal();
 			for (SearchMoviesResult searchMoviesResult : searchMoviesResponse.getResults()) {
-				LOGGER.info(String.format("Retrieving movie %d of %d...", movieCount, movieTotal));
+				LOGGER.info("Aggregating movie data of movie {} of {}...", movieCount, movieTotal);
 				Movie movie = null;
 				MovieCreditsResponse movieCreditResponse = restTemplate.getForObject(getMovieCreditsUri(apiKey, searchMoviesResult.getId()), MovieCreditsResponse.class);
 				for (CrewResult crewResult : movieCreditResponse.getCrew()) {
