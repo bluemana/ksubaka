@@ -29,15 +29,13 @@ public class Connector {
 		List<Movie> movies = new ArrayList<Movie>();
 		int pageCount = 1;
 		int pageTotal = 1;
-		int movieCount = 1;
-		int movieTotal = 0;
 		while (pageCount <= pageTotal) {
 			SearchMoviesResponse searchMoviesResponse = restTemplate.getForObject(
 				getSearchMovieUri(apiKey, searchText, pageCount), SearchMoviesResponse.class);
 			pageTotal = searchMoviesResponse.getPageTotal();
-			movieTotal = searchMoviesResponse.getResultTotal();
+			int movieTotal = searchMoviesResponse.getResultTotal();
 			for (SearchMoviesResult searchMoviesResult : searchMoviesResponse.getResults()) {
-				LOGGER.info("Aggregating movie data of movie {} of {}...", movieCount, movieTotal);
+				LOGGER.info("Aggregating movie data of movie {} of {}...", movies.size() + 1, movieTotal);
 				Movie movie = null;
 				MovieCredits movieCredits = restTemplate.getForObject(getMovieCreditsUri(apiKey, searchMoviesResult.getId()), MovieCredits.class);
 				for (CrewMember crewMember : movieCredits.getCrew()) {
@@ -52,7 +50,6 @@ public class Connector {
 							searchMoviesResult.getReleaseDate(), null);
 				}
 				movies.add(movie);
-				movieCount++;
 			}
 			pageCount++;
 		};
