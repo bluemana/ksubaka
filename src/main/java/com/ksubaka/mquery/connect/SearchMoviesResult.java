@@ -40,6 +40,6 @@ public class SearchMoviesResult {
 	
 	@Override
 	public String toString() {
-		return String.format("SearchMovieResult[%d,%s,%s]", id, releaseDate, title);
+		return String.format("SearchMoviesResult[%d,%s,%s]", id, releaseDate, title);
 	}
 }

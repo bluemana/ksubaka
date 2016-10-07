@@ -3,12 +3,12 @@ package com.ksubaka.mquery.connect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class CrewResult {
+public class CrewMember {
 
 	private String name;
 	private String job;
 	
-	public CrewResult() {
+	public CrewMember() {
 	}
 	
 	public String getName() {
@@ -29,6 +29,6 @@ public class CrewResult {
 	
 	@Override
 	public String toString() {
-		return String.format("CrewResult[%s,%s]", name, job);
+		return String.format("CrewMember[%s,%s]", name, job);
 	}
 }

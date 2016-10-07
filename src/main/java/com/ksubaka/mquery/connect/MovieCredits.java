@@ -5,23 +5,23 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class MovieCreditsResponse {
+public class MovieCredits {
 
-	private List<CrewResult> crew;
+	private List<CrewMember> crew;
 	
-	public MovieCreditsResponse() {
+	public MovieCredits() {
 	}
 	
-	public List<CrewResult> getCrew() {
+	public List<CrewMember> getCrew() {
 		return crew;
 	}
 	
-	public void setCrew(List<CrewResult> crew) {
+	public void setCrew(List<CrewMember> crew) {
 		this.crew = crew;
 	}
 	
 	@Override
 	public String toString() {
-		return crew.toString();
+		return String.format("MovieCredits[%s]", crew.toString());
 	}
 }

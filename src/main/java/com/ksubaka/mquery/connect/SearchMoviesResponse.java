@@ -52,7 +52,7 @@ public class SearchMoviesResponse {
 	
 	@Override
 	public String toString() {
-		return String.format("SearchResult[%s,%s,%s,%s]",
+		return String.format("SearchMoviesResponse[%s,%s,%s,%s]",
 			page, pageTotal, resultTotal, results.toString());
 	}
 }

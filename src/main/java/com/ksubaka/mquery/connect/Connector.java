@@ -39,11 +39,11 @@ public class Connector {
 			for (SearchMoviesResult searchMoviesResult : searchMoviesResponse.getResults()) {
 				LOGGER.info("Aggregating movie data of movie {} of {}...", movieCount, movieTotal);
 				Movie movie = null;
-				MovieCreditsResponse movieCreditResponse = restTemplate.getForObject(getMovieCreditsUri(apiKey, searchMoviesResult.getId()), MovieCreditsResponse.class);
-				for (CrewResult crewResult : movieCreditResponse.getCrew()) {
-					if (crewResult.getJob().equals("Director")) {
+				MovieCredits movieCredits = restTemplate.getForObject(getMovieCreditsUri(apiKey, searchMoviesResult.getId()), MovieCredits.class);
+				for (CrewMember crewMember : movieCredits.getCrew()) {
+					if (crewMember.getJob().equals("Director")) {
 						movie = new Movie(searchMoviesResult.getTitle(),
-								searchMoviesResult.getReleaseDate(), crewResult.getName());
+								searchMoviesResult.getReleaseDate(), crewMember.getName());
 						break;
 					}
 				}
