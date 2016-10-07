@@ -1,4 +1,4 @@
-package com.ksubaka.mquery.connect;
+package com.ksubaka.mquery.connect.tmdb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

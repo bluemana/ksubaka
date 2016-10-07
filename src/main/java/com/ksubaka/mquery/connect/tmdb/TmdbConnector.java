@@ -1,4 +1,4 @@
-package com.ksubaka.mquery.connect;
+package com.ksubaka.mquery.connect.tmdb;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -12,15 +12,15 @@ import org.springframework.web.util.UriUtils;
 
 import com.ksubaka.mquery.Movie;
 
-public class Connector {
+public class TmdbConnector {
 	
-	private static final Logger LOGGER = LogManager.getLogger(Connector.class);
+	private static final Logger LOGGER = LogManager.getLogger(TmdbConnector.class);
 	private static final String BASE_URI = "http://api.themoviedb.org/3/";
 	
 	private final RestTemplate restTemplate;
 	private final String apiKey;
 	
-	public Connector(RestTemplate restTemplate, String apiKey) {
+	public TmdbConnector(RestTemplate restTemplate, String apiKey) {
 		this.restTemplate = restTemplate;
 		this.apiKey = apiKey;
 	}

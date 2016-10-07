@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
 
-import com.ksubaka.mquery.connect.Connector;
+import com.ksubaka.mquery.connect.tmdb.TmdbConnector;
 
 public class Main {
 	
@@ -38,7 +38,7 @@ public class Main {
 					config.load(input);
 					String apiKey = config.getProperty("api_key");
 					if (apiKey != null) {
-						Connector connector = new Connector(new RestTemplate(), apiKey);
+						TmdbConnector connector = new TmdbConnector(new RestTemplate(), apiKey);
 						List<Movie> movies = connector.getMovies(searchString);
 						for (Movie movie : movies) {
 							System.out.println(format(movie));
