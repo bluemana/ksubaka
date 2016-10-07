@@ -6,23 +6,23 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class SearchMoviesResponse {
+public class SearchResults {
 
-	private List<SearchMoviesResult> results;
+	private List<SearchResult> results;
 	private int page;
 	@JsonProperty("total_pages")
 	private int pageTotal;
 	@JsonProperty("total_results")
 	private int resultTotal;
 	
-	public SearchMoviesResponse() {
+	public SearchResults() {
 	}
 	
-	public List<SearchMoviesResult> getResults() {
+	public List<SearchResult> getResults() {
 		return results;
 	}
 	
-	public void setResults(List<SearchMoviesResult> results) {
+	public void setResults(List<SearchResult> results) {
 		this.results = results;
 	}
 	
@@ -52,7 +52,7 @@ public class SearchMoviesResponse {
 	
 	@Override
 	public String toString() {
-		return String.format("SearchMoviesResponse[%s,%s,%s,%s]",
+		return String.format("SearchResults[%s,%s,%s,%s]",
 			page, pageTotal, resultTotal, results.toString());
 	}
 }

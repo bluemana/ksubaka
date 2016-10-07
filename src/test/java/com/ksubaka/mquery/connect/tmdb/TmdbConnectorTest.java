@@ -27,7 +27,7 @@ public class TmdbConnectorTest {
 	@Test
 	public void movies_NoMatch_EmptyList() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-		String jsonResponse = readResource("TmdbConnectorTest_movies_NoMatch_EmptyList.json");
+		String jsonResponse = readResource("search_results_no_match.json");
 		
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchMovieUri(API_KEY, "", 1)))
@@ -42,7 +42,7 @@ public class TmdbConnectorTest {
 	@Test
 	public void movies_Match_Retrieved() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-		String jsonResponse1 = readResource("TmdbConnectorTest_movies_Match_Retrieved.json");
+		String jsonResponse1 = readResource("search_results_page_1_of_1.json");
 		String movie87CreditsJson = readResource("movie_87_credits.json");
 		String movie89CreditsJson = readResource("movie_89_credits.json");
 		
@@ -68,8 +68,8 @@ public class TmdbConnectorTest {
 	@Test
 	public void movies_MultiplePageMatch_Retrieved() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
-		String page1Json = readResource("TmdbConnectorTest_movies_MultiplePageMatch_Retrieved_Page1.json");
-		String page2Json = readResource("TmdbConnectorTest_movies_MultiplePageMatch_Retrieved_Page2.json");
+		String page1Json = readResource("search_results_page_1_of_2.json");
+		String page2Json = readResource("search_results_page_2_of_2.json");
 		String movie85CreditsJson = readResource("movie_85_credits.json");
 		String movie87CreditsJson = readResource("movie_87_credits.json");
 		String movie89CreditsJson = readResource("movie_89_credits.json");

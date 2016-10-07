@@ -30,24 +30,24 @@ public class TmdbConnector {
 		int pageCount = 1;
 		int pageTotal = 1;
 		while (pageCount <= pageTotal) {
-			SearchMoviesResponse searchMoviesResponse = restTemplate.getForObject(
-				getSearchMovieUri(apiKey, searchText, pageCount), SearchMoviesResponse.class);
-			pageTotal = searchMoviesResponse.getPageTotal();
-			int movieTotal = searchMoviesResponse.getResultTotal();
-			for (SearchMoviesResult searchMoviesResult : searchMoviesResponse.getResults()) {
+			SearchResults searchResults = restTemplate.getForObject(
+				getSearchMovieUri(apiKey, searchText, pageCount), SearchResults.class);
+			pageTotal = searchResults.getPageTotal();
+			int movieTotal = searchResults.getResultTotal();
+			for (SearchResult searchResult : searchResults.getResults()) {
 				LOGGER.info("Aggregating movie data of movie {} of {}...", movies.size() + 1, movieTotal);
 				Movie movie = null;
-				MovieCredits movieCredits = restTemplate.getForObject(getMovieCreditsUri(apiKey, searchMoviesResult.getId()), MovieCredits.class);
+				MovieCredits movieCredits = restTemplate.getForObject(getMovieCreditsUri(apiKey, searchResult.getId()), MovieCredits.class);
 				for (CrewMember crewMember : movieCredits.getCrew()) {
 					if (crewMember.getJob().equals("Director")) {
-						movie = new Movie(searchMoviesResult.getTitle(),
-								searchMoviesResult.getReleaseDate(), crewMember.getName());
+						movie = new Movie(searchResult.getTitle(),
+								searchResult.getReleaseDate(), crewMember.getName());
 						break;
 					}
 				}
 				if (movie == null) {
-					movie = new Movie(searchMoviesResult.getTitle(),
-							searchMoviesResult.getReleaseDate(), null);
+					movie = new Movie(searchResult.getTitle(),
+							searchResult.getReleaseDate(), null);
 				}
 				movies.add(movie);
 			}

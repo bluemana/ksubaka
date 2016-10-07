@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class SearchMoviesResult {
+public class SearchResult {
 
 	private Long id;
 	@JsonProperty("release_date")
 	private String releaseDate;
 	private String title;
 	
-	public SearchMoviesResult() {
+	public SearchResult() {
 	}
 	
 	public Long getId() {
@@ -40,6 +40,6 @@ public class SearchMoviesResult {
 	
 	@Override
 	public String toString() {
-		return String.format("SearchMoviesResult[%d,%s,%s]", id, releaseDate, title);
+		return String.format("SearchResult[%d,%s,%s]", id, releaseDate, title);
 	}
 }
