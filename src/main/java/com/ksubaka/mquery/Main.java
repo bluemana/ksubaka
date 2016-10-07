@@ -1,10 +1,6 @@
 package com.ksubaka.mquery;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -17,7 +13,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.client.RestTemplate;
 
-import com.ksubaka.mquery.connect.tmdb.TmdbConnector;
+import com.ksubaka.mquery.connect.Api;
+import com.ksubaka.mquery.connect.Connector;
+import com.ksubaka.mquery.connect.ConnectorFactory;
 
 public class Main {
 	
@@ -31,24 +29,22 @@ public class Main {
 			if (cmdLine.hasOption("help")) {
 				printUsage(options);
 			} else {
-				String searchString = getSearchString(cmdLine);
-				LOGGER.info("Searching for \"{}\"...", searchString);
-				Properties config = new Properties();
-				try (InputStream input = new FileInputStream("config.properties")) {
-					config.load(input);
-					String apiKey = config.getProperty("api_key");
-					if (apiKey != null) {
-						TmdbConnector connector = new TmdbConnector(new RestTemplate(), apiKey);
+				Api api = getApi(cmdLine);
+				if (api != null) {
+					try {
+						Connector connector = ConnectorFactory.create(api, new RestTemplate());
+						String searchString = getSearchString(cmdLine);
+						LOGGER.info("Searching for \"{}\" from {}...", searchString, api.getShortName());
 						List<Movie> movies = connector.getMovies(searchString);
 						for (Movie movie : movies) {
 							System.out.println(format(movie));
 						}
-					} else {
-						LOGGER.error("api_key entry not found in config.properties");
+					} catch (Exception e) {
+						LOGGER.error(e);
 						System.exit(1);
 					}
-				} catch (IOException e) {
-					LOGGER.error("An I/O error occured while accessing config.properties", e);
+				} else {
+					printUsage(options);
 					System.exit(1);
 				}
 			}
@@ -66,6 +62,14 @@ public class Main {
 			.desc("print this help message")
 			.required(false)
 			.build());
+		options.addOption(Option.builder("a")
+			.longOpt("api")
+			.hasArg()
+			.desc("use the specified API. Available options:\n" +
+					"tmdb : the API of The Movie Database (themoviedb.org)\n" +
+					"omdb : the API of Open Movie Database API (omdbapi.com)")
+			.required(true)
+			.build());
 		options.addOption(Option.builder("m")
 			.longOpt("movie")
 			.hasArgs()
@@ -78,6 +82,11 @@ public class Main {
 	private static void printUsage(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.printHelp("mquery", options, true);
+	}
+	
+	private static Api getApi(CommandLine cmdLine) {
+		String apiString = cmdLine.getOptionValue("api");
+		return Api.fromIdName(apiString);
 	}
 	
 	private static String getSearchString(CommandLine cmdLine) {

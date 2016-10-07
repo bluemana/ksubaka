@@ -11,8 +11,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriUtils;
 
 import com.ksubaka.mquery.Movie;
+import com.ksubaka.mquery.connect.Connector;
 
-public class TmdbConnector {
+public class TmdbConnector implements Connector {
 	
 	private static final Logger LOGGER = LogManager.getLogger(TmdbConnector.class);
 	private static final String BASE_URI = "http://api.themoviedb.org/3/";
