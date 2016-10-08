@@ -34,12 +34,16 @@ public class OmdbApiConnector implements Connector {
 			if (searchResults.getSuccessful()) {
 				resultTotal = searchResults.getResultTotal();
 				for (SearchResult searchResult : searchResults.getResults()) {
-					LOGGER.info("Aggregating movie data of movie {} of {}...", movies.size() + 1, resultTotal);
-					String imdbId = searchResult.getImdbId();
-					MovieResponse movieResponse = restTemplate.getForObject(getMovieUri(imdbId), MovieResponse.class);
-					String director = movieResponse.getDirector();
-					movies.add(new Movie(searchResult.getTitle(), parseYear(searchResult.getYear()), director));
 					resultCount++;
+					if (isValidType(searchResult.getType())) {
+						LOGGER.info("Aggregating movie data of movie {} of {}...", resultCount, resultTotal);
+						String imdbId = searchResult.getImdbId();
+						MovieResponse movieResponse = restTemplate.getForObject(getMovieUri(imdbId), MovieResponse.class);
+						String director = movieResponse.getDirector();
+						movies.add(new Movie(searchResult.getTitle(), parseYear(searchResult.getYear()), director));
+					} else {
+						LOGGER.info("Skipping result {} of {}...", resultCount, resultTotal);
+					}
 				}
 			} else {
 				break;
@@ -71,5 +75,9 @@ public class OmdbApiConnector implements Connector {
 			result = Integer.parseInt(year.split("[-–]")[0]);
 		}
 		return result;
+	}
+	
+	private boolean isValidType(String type) {
+		return type.equals("movie") || type.equals("series") || type.equals("episode");
 	}
 }

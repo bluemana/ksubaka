@@ -13,6 +13,8 @@ public class SearchResult {
 	private String year;
 	@JsonProperty("imdbID")
 	private String imdbId;
+	@JsonProperty("Type")
+	private String type;
 	
 	public String getTitle() {
 		return title;
@@ -36,5 +38,13 @@ public class SearchResult {
 	
 	public void setImdbId(String imdbId) {
 		this.imdbId = imdbId;
+	}
+	
+	public String getType() {
+		return type;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
 	}
 }

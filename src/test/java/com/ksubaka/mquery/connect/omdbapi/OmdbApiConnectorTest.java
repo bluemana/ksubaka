@@ -41,7 +41,7 @@ public class OmdbApiConnectorTest {
 		RestTemplate restTemplate = new RestTemplate();
 		String searchResultsJson = readResource("search_results.json");
 		String movie1Json = readResource("movie_tt0083658.json");
-		String movie2Json = readResource("movie_tt0126817.json");
+		String movie2Json = readResource("movie_tt1165254.json");
 		
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(OmdbApiConnector.getSearchUri("blade runner", 1)))
@@ -50,7 +50,7 @@ public class OmdbApiConnectorTest {
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(OmdbApiConnector.getMovieUri("tt0083658")))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(movie1Json, MediaType.APPLICATION_JSON));
-		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(OmdbApiConnector.getMovieUri("tt0126817")))
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(OmdbApiConnector.getMovieUri("tt1165254")))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(movie2Json, MediaType.APPLICATION_JSON));
 		
@@ -58,7 +58,7 @@ public class OmdbApiConnectorTest {
 		List<Movie> movies = connector.getMovies("blade runner");
 		List<Movie> expected = new ArrayList<Movie>();
 		expected.add(new Movie("Blade Runner", 1982, "Ridley Scott"));
-		expected.add(new Movie("Blade Runner", 1997, "Joseph D. Kucan"));
+		expected.add(new Movie("Blade Runner: Deleted and Alternate Scenes", 2007, null));
 		Assert.assertTrue(movies.equals(expected));
 	}
 	
@@ -101,7 +101,7 @@ public class OmdbApiConnectorTest {
 	public void movies_IntervalYear_FirstEntryYear() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		String searchResultsJson = readResource("search_results_tt0103586.json");
-		String movie1Json = readResource("movie_tt0103586.json");
+		String movieJson = readResource("movie_tt0103586.json");
 		
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(OmdbApiConnector.getSearchUri("indiana jones", 1)))
@@ -109,7 +109,7 @@ public class OmdbApiConnectorTest {
 			.andRespond(MockRestResponseCreators.withSuccess(searchResultsJson, MediaType.APPLICATION_JSON));
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(OmdbApiConnector.getMovieUri("tt0103586")))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-			.andRespond(MockRestResponseCreators.withSuccess(movie1Json, MediaType.APPLICATION_JSON));
+			.andRespond(MockRestResponseCreators.withSuccess(movieJson, MediaType.APPLICATION_JSON));
 		
 		OmdbApiConnector connector = new OmdbApiConnector(restTemplate);
 		List<Movie> movies = connector.getMovies("indiana jones");
@@ -120,7 +120,7 @@ public class OmdbApiConnectorTest {
 	public void movies_DirectorNotAvailable_NullDirector() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		String searchResultsJson = readResource("search_results_tt0103586.json");
-		String movie1Json = readResource("movie_tt0103586.json");
+		String movieJson = readResource("movie_tt0103586.json");
 		
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(OmdbApiConnector.getSearchUri("indiana jones", 1)))
@@ -128,11 +128,26 @@ public class OmdbApiConnectorTest {
 			.andRespond(MockRestResponseCreators.withSuccess(searchResultsJson, MediaType.APPLICATION_JSON));
 		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(OmdbApiConnector.getMovieUri("tt0103586")))
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-			.andRespond(MockRestResponseCreators.withSuccess(movie1Json, MediaType.APPLICATION_JSON));
+			.andRespond(MockRestResponseCreators.withSuccess(movieJson, MediaType.APPLICATION_JSON));
 		
 		OmdbApiConnector connector = new OmdbApiConnector(restTemplate);
 		List<Movie> movies = connector.getMovies("indiana jones");
 		Assert.assertNull(movies.get(0).getDirector());
+	}
+	
+	@Test
+	public void movies_NotMovieType_NotReturned() throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String searchResultsJson = readResource("search_results_other_type.json");
+		
+		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(OmdbApiConnector.getSearchUri("blade", 1)))
+			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+			.andRespond(MockRestResponseCreators.withSuccess(searchResultsJson, MediaType.APPLICATION_JSON));
+		
+		OmdbApiConnector connector = new OmdbApiConnector(restTemplate);
+		List<Movie> movies = connector.getMovies("blade");
+		Assert.assertTrue(movies.isEmpty());
 	}
 	
 	private static String readResource(String resourceName) throws IOException {

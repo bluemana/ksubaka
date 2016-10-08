@@ -7,13 +7,13 @@
 			"Type": "movie",
 			"Poster": "http://ia.media-imdb.com/images/M/MV5BZWZlYmEyYTItNGRjYy00ZmMxLWEzMWItM2Q2NjZlNTMwMjQ3XkEyXkFqcGdeQXVyNDYyMDk5MTU@._V1_SX300.jpg"
 		},
-		{
-			"Title": "Blade Runner",
-			"Year": "1997",
-			"imdbID": "tt0126817",
-			"Type": "game",
-			"Poster": "http://ia.media-imdb.com/images/M/MV5BMTk5MDU5Nzg2NF5BMl5BanBnXkFtZTgwMzI1NzIyMTE@._V1_SX300.jpg"
-		}
+    {
+      "Title": "Blade Runner: Deleted and Alternate Scenes",
+      "Year": "2007",
+      "imdbID": "tt1165254",
+      "Type": "movie",
+      "Poster": "N/A"
+    }
 	],
 	"totalResults": "2",
 	"Response": "True"
