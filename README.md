@@ -1,6 +1,6 @@
 # Ksubaka's query tool
 
-Implementation of a command line tool that queries web APIs to retrieve information on movies.
+Implementation of a command-line tool that queries web APIs to retrieve information on movies.
 
 Current usage:
 
