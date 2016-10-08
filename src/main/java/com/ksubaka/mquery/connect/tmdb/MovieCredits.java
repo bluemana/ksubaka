@@ -2,15 +2,9 @@ package com.ksubaka.mquery.connect.tmdb;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class MovieCredits {
 
 	private List<CrewMember> crew;
-	
-	public MovieCredits() {
-	}
 	
 	public List<CrewMember> getCrew() {
 		return crew;

@@ -1,15 +1,9 @@
 package com.ksubaka.mquery.connect.tmdb;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class CrewMember {
 
 	private String name;
 	private String job;
-	
-	public CrewMember() {
-	}
 	
 	public String getName() {
 		return name;

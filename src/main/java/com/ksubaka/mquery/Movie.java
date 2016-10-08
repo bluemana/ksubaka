@@ -5,12 +5,12 @@ import java.util.Objects;
 public class Movie {
 	
 	private final String title;
-	private final String releaseDate;
+	private final Integer releaseYear;
 	private final String director;
 	
-	public Movie(String title, String releaseDate, String director) {
+	public Movie(String title, Integer releaseYear, String director) {
 		this.title = title;
-		this.releaseDate = releaseDate;
+		this.releaseYear = releaseYear;
 		this.director = director;
 	}
 	
@@ -18,8 +18,8 @@ public class Movie {
 		return title;
 	}
 	
-	public String getReleaseDate() {
-		return releaseDate;
+	public Integer getReleaseYear() {
+		return releaseYear;
 	}
 	
 	public String getDirector() {
@@ -31,20 +31,20 @@ public class Movie {
 		boolean result = false;
 		if (obj instanceof Movie) {
 			Movie movie = (Movie) obj;
-			result = title.equals(movie.title) &&
-				releaseDate.equals(movie.releaseDate) &&
-				director.equals(movie.director);
+			result = Objects.equals(title,movie.title) &&
+				Objects.equals(releaseYear, movie.releaseYear) &&
+				Objects.equals(director, movie.director);
 		}
 		return result;
 	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(title, releaseDate, director);
+		return Objects.hash(title, releaseYear, director);
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("Movie[%s,%s,%s]", title, releaseDate, director);
+		return String.format("Movie[%s,%s,%s]", title, releaseYear, director);
 	}
 }

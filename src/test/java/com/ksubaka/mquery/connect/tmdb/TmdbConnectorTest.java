@@ -17,7 +17,7 @@ import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 
 import com.ksubaka.mquery.Movie;
-import com.ksubaka.mquery.connect.tmdb.TmdbConnector;
+import com.ksubaka.mquery.connect.Connector;
 
 
 public class TmdbConnectorTest {
@@ -34,7 +34,7 @@ public class TmdbConnectorTest {
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(responseJson, MediaType.APPLICATION_JSON));
 		
-		TmdbConnector connector = new TmdbConnector(restTemplate, API_KEY);
+		Connector connector = new TmdbConnector(restTemplate, API_KEY);
 		List<Movie> movies = connector.getMovies("");
 		Assert.assertTrue(movies.isEmpty());
 	}
@@ -57,11 +57,11 @@ public class TmdbConnectorTest {
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(movie89CreditsJson, MediaType.APPLICATION_JSON));
 		
-		TmdbConnector connector = new TmdbConnector(restTemplate, API_KEY);
+		Connector connector = new TmdbConnector(restTemplate, API_KEY);
 		List<Movie> movies = connector.getMovies("indiana jones");
 		List<Movie> expected = new ArrayList<Movie>();
-		expected.add(new Movie("Indiana Jones and the Temple of Doom", "1984-05-23", "Steven Spielberg"));
-		expected.add(new Movie("Indiana Jones and the Last Crusade", "1989-05-24", "Steven Spielberg"));
+		expected.add(new Movie("Indiana Jones and the Temple of Doom", 1984, "Steven Spielberg"));
+		expected.add(new Movie("Indiana Jones and the Last Crusade", 1989, "Steven Spielberg"));
 		Assert.assertTrue(movies.equals(expected));
 	}
 	
@@ -91,13 +91,51 @@ public class TmdbConnectorTest {
 			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 			.andRespond(MockRestResponseCreators.withSuccess(movie85CreditsJson, MediaType.APPLICATION_JSON));
 		
-		TmdbConnector connector = new TmdbConnector(restTemplate, API_KEY);
+		Connector connector = new TmdbConnector(restTemplate, API_KEY);
 		List<Movie> movies = connector.getMovies("indiana jones");
 		List<Movie> expected = new ArrayList<Movie>();
-		expected.add(new Movie("Indiana Jones and the Last Crusade", "1989-05-24", "Steven Spielberg"));
-		expected.add(new Movie("Indiana Jones and the Temple of Doom", "1984-05-23", "Steven Spielberg"));
-		expected.add(new Movie("Raiders of the Lost Ark", "1981-06-12", "Steven Spielberg"));
+		expected.add(new Movie("Indiana Jones and the Last Crusade", 1989, "Steven Spielberg"));
+		expected.add(new Movie("Indiana Jones and the Temple of Doom", 1984, "Steven Spielberg"));
+		expected.add(new Movie("Raiders of the Lost Ark", 1981, "Steven Spielberg"));
 		Assert.assertTrue(movies.equals(expected));
+	}
+	
+	@Test
+	public void movies_NoReleaseDate_NullReleaseYear() throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String resultJson = readResource("search_results_no_release_date.json");
+		String movieCreditsJson = readResource("movie_368079_credits.json");
+		
+		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchUri(API_KEY, "indiana jones", 1)))
+			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+			.andRespond(MockRestResponseCreators.withSuccess(resultJson, MediaType.APPLICATION_JSON));
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getMovieCreditsUri(API_KEY, 368079L)))
+			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+			.andRespond(MockRestResponseCreators.withSuccess(movieCreditsJson, MediaType.APPLICATION_JSON));
+		
+		Connector connector = new TmdbConnector(restTemplate, API_KEY);
+		List<Movie> movies = connector.getMovies("indiana jones");
+		Assert.assertNull(movies.get(0).getReleaseYear());
+	}
+	
+	@Test
+	public void movies_NoDirector_NullDirector() throws Exception {
+		RestTemplate restTemplate = new RestTemplate();
+		String resultJson = readResource("search_results_no_director.json");
+		String movieCreditsJson = readResource("movie_368079_credits.json");
+		
+		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build();
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getSearchUri(API_KEY, "indiana jones", 1)))
+			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+			.andRespond(MockRestResponseCreators.withSuccess(resultJson, MediaType.APPLICATION_JSON));
+		server.expect(ExpectedCount.once(), MockRestRequestMatchers.requestTo(TmdbConnector.getMovieCreditsUri(API_KEY, 368079L)))
+			.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+			.andRespond(MockRestResponseCreators.withSuccess(movieCreditsJson, MediaType.APPLICATION_JSON));
+		
+		Connector connector = new TmdbConnector(restTemplate, API_KEY);
+		List<Movie> movies = connector.getMovies("indiana jones");
+		Assert.assertNull(movies.get(0).getDirector());
 	}
 	
 	private static String readResource(String resourceName) throws IOException {

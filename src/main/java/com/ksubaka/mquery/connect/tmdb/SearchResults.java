@@ -2,10 +2,8 @@ package com.ksubaka.mquery.connect.tmdb;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class SearchResults {
 
 	private List<SearchResult> results;
@@ -14,9 +12,6 @@ public class SearchResults {
 	private int pageTotal;
 	@JsonProperty("total_results")
 	private int resultTotal;
-	
-	public SearchResults() {
-	}
 	
 	public List<SearchResult> getResults() {
 		return results;

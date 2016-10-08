@@ -40,7 +40,7 @@ public class Main {
 							System.out.println(format(movie));
 						}
 					} catch (Exception e) {
-						LOGGER.error(e);
+						LOGGER.error(e.getMessage(), e);
 						System.exit(1);
 					}
 				} else {
@@ -100,6 +100,8 @@ public class Main {
 	
 	private static String format(Movie movie) {
 		return String.format("%s (%s) - %s",
-			movie.getTitle(), movie.getReleaseDate(), movie.getDirector());
+			movie.getTitle(),
+			movie.getReleaseYear() != null ? movie.getReleaseYear().toString() : "N/A",
+			movie.getDirector() != null ? movie.getDirector() : "N/A");
 	}
 }

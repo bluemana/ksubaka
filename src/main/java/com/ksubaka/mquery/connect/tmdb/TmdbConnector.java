@@ -42,13 +42,13 @@ public class TmdbConnector implements Connector {
 				for (CrewMember crewMember : movieCredits.getCrew()) {
 					if (crewMember.getJob().equals("Director")) {
 						movie = new Movie(searchResult.getTitle(),
-								searchResult.getReleaseDate(), crewMember.getName());
+								parseReleaseYear(searchResult.getReleaseDate()), crewMember.getName());
 						break;
 					}
 				}
 				if (movie == null) {
 					movie = new Movie(searchResult.getTitle(),
-							searchResult.getReleaseDate(), null);
+							parseReleaseYear(searchResult.getReleaseDate()), null);
 				}
 				movies.add(movie);
 			}
@@ -72,5 +72,13 @@ public class TmdbConnector implements Connector {
 	
 	public static URI getMovieCreditsUri(String apiKey, Long movieId) {
 		return URI.create(BASE_URI + "movie/" + movieId + "/credits?api_key=" + apiKey);
+	}
+	
+	private static Integer parseReleaseYear(String releaseDate) {
+		Integer releaseYear = null;
+		if (releaseDate != null) {
+			releaseYear = Integer.parseInt(releaseDate.split("[-–]")[0]);
+		}
+		return releaseYear;
 	}
 }

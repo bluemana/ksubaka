@@ -1,18 +1,16 @@
 package com.ksubaka.mquery.connect.tmdb;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.ksubaka.mquery.connect.StringDeserializer;
 
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class SearchResult {
 
 	private Long id;
 	@JsonProperty("release_date")
+	@JsonDeserialize(using=StringDeserializer.class)
 	private String releaseDate;
 	private String title;
-	
-	public SearchResult() {
-	}
 	
 	public Long getId() {
 		return id;

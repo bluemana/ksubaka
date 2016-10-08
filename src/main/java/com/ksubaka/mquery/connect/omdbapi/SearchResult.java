@@ -1,12 +1,15 @@
 package com.ksubaka.mquery.connect.omdbapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.ksubaka.mquery.connect.StringDeserializer;
 
 public class SearchResult {
 
 	@JsonProperty("Title")
 	private String title;
 	@JsonProperty("Year")
+	@JsonDeserialize(using=StringDeserializer.class)
 	private String year;
 	@JsonProperty("imdbID")
 	private String imdbId;

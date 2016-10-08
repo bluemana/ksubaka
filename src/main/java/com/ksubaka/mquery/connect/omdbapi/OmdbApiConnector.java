@@ -33,7 +33,7 @@ public class OmdbApiConnector implements Connector {
 				String imdbId = searchResult.getImdbId();
 				MovieResponse movieResponse = restTemplate.getForObject(getMovieUri(imdbId), MovieResponse.class);
 				String director = movieResponse.getDirector();
-				movies.add(new Movie(searchResult.getTitle(), searchResult.getYear(), director));
+				movies.add(new Movie(searchResult.getTitle(), parseYear(searchResult.getYear()), director));
 			}
 		}
 		return movies;
@@ -52,5 +52,13 @@ public class OmdbApiConnector implements Connector {
 	
 	public static URI getMovieUri(String movieImdbId) {
 		return URI.create(BASE_URI + "?i=" + movieImdbId);
+	}
+	
+	private static Integer parseYear(String year) {
+		Integer result = null;
+		if (year != null) {
+			result = Integer.parseInt(year.split("[-–]")[0]);
+		}
+		return result;
 	}
 }
