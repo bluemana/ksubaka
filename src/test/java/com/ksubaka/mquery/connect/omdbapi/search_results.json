@@ -7,13 +7,13 @@
 			"Type": "movie",
 			"Poster": "http://ia.media-imdb.com/images/M/MV5BZWZlYmEyYTItNGRjYy00ZmMxLWEzMWItM2Q2NjZlNTMwMjQ3XkEyXkFqcGdeQXVyNDYyMDk5MTU@._V1_SX300.jpg"
 		},
-    {
-      "Title": "Blade Runner: Deleted and Alternate Scenes",
-      "Year": "2007",
-      "imdbID": "tt1165254",
-      "Type": "movie",
-      "Poster": "N/A"
-    }
+		{
+			"Title": "Dangerous Days: Making Blade Runner",
+			"Year": "2007",
+			"imdbID": "tt1080585",
+			"Type": "movie",
+			"Poster": "http://ia.media-imdb.com/images/M/MV5BNzI2NjU0MjY4MF5BMl5BanBnXkFtZTgwMjM0NDQzNjE@._V1_SX300.jpg"
+		}
 	],
 	"totalResults": "2",
 	"Response": "True"

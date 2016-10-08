@@ -1,13 +1,9 @@
 package com.ksubaka.mquery.connect.tmdb;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import org.junit.Assert;
-import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.ExpectedCount;
@@ -18,13 +14,14 @@ import org.springframework.web.client.RestTemplate;
 
 import com.ksubaka.mquery.Movie;
 import com.ksubaka.mquery.connect.Connector;
+import com.ksubaka.mquery.connect.ConnectorTest;
 
 
-public class TmdbConnectorTest {
+public class TmdbConnectorTest extends ConnectorTest {
 	
 	private static String API_KEY = "123456";
 	
-	@Test
+	@Override
 	public void movies_NoMatch_EmptyList() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		String responseJson = readResource("search_results_no_match.json");
@@ -39,8 +36,8 @@ public class TmdbConnectorTest {
 		Assert.assertTrue(movies.isEmpty());
 	}
 	
-	@Test
-	public void movies_Match_Retrieved() throws Exception {
+	@Override
+	public void movies_Match_List() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		String searchResultsJson = readResource("search_results_page_1_of_1.json");
 		String movie87CreditsJson = readResource("movie_87_credits.json");
@@ -65,8 +62,8 @@ public class TmdbConnectorTest {
 		Assert.assertTrue(movies.equals(expected));
 	}
 	
-	@Test
-	public void movies_MultiplePageMatch_Retrieved() throws Exception {
+	@Override
+	public void movies_MultiplePageMatch_List() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		String page1Json = readResource("search_results_page_1_of_2.json");
 		String page2Json = readResource("search_results_page_2_of_2.json");
@@ -100,8 +97,8 @@ public class TmdbConnectorTest {
 		Assert.assertTrue(movies.equals(expected));
 	}
 	
-	@Test
-	public void movies_NoReleaseDate_NullReleaseYear() throws Exception {
+	@Override
+	public void clean_NoReleaseYear_NullReleaseYear() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		String resultJson = readResource("search_results_no_release_date.json");
 		String movieCreditsJson = readResource("movie_368079_credits.json");
@@ -119,8 +116,8 @@ public class TmdbConnectorTest {
 		Assert.assertNull(movies.get(0).getReleaseYear());
 	}
 	
-	@Test
-	public void movies_NoDirector_NullDirector() throws Exception {
+	@Override
+	public void clean_NoDirector_NullDirector() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		String resultJson = readResource("search_results_no_director.json");
 		String movieCreditsJson = readResource("movie_368079_credits.json");
@@ -136,12 +133,5 @@ public class TmdbConnectorTest {
 		Connector connector = new TmdbConnector(restTemplate, API_KEY);
 		List<Movie> movies = connector.getMovies("indiana jones");
 		Assert.assertNull(movies.get(0).getDirector());
-	}
-	
-	private static String readResource(String resourceName) throws IOException {
-		try (InputStream input = TmdbConnectorTest.class.getResourceAsStream(resourceName);
-				Scanner scanner = new Scanner(input)) {
-			return scanner.useDelimiter("\\A").next();
-		}
 	}
 }
