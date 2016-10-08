@@ -26,23 +26,34 @@ public class OmdbApiConnector implements Connector {
 	
 	public List<Movie> getMovies(String searchText) {
 		List<Movie> movies = new ArrayList<Movie>();
-		SearchResults searchResults = restTemplate.getForObject(getSearchUri(searchText), SearchResults.class);
-		if (searchResults.getSuccessful()) {
-			for (SearchResult searchResult : searchResults.getResults()) {
-				LOGGER.info("Aggregating movie data of movie {} of {}...", movies.size() + 1, searchResults.getResults().size());
-				String imdbId = searchResult.getImdbId();
-				MovieResponse movieResponse = restTemplate.getForObject(getMovieUri(imdbId), MovieResponse.class);
-				String director = movieResponse.getDirector();
-				movies.add(new Movie(searchResult.getTitle(), parseYear(searchResult.getYear()), director));
+		int resultTotal = 1;
+		int resultCount = 0;
+		int pageCount = 1;
+		while (resultCount < resultTotal) {
+			SearchResults searchResults = restTemplate.getForObject(getSearchUri(searchText, pageCount), SearchResults.class);
+			if (searchResults.getSuccessful()) {
+				resultTotal = searchResults.getResultTotal();
+				for (SearchResult searchResult : searchResults.getResults()) {
+					LOGGER.info("Aggregating movie data of movie {} of {}...", movies.size() + 1, resultTotal);
+					String imdbId = searchResult.getImdbId();
+					MovieResponse movieResponse = restTemplate.getForObject(getMovieUri(imdbId), MovieResponse.class);
+					String director = movieResponse.getDirector();
+					movies.add(new Movie(searchResult.getTitle(), parseYear(searchResult.getYear()), director));
+					resultCount++;
+				}
+			} else {
+				break;
 			}
+			pageCount++;
 		}
 		return movies;
 	}
 	
-	public static URI getSearchUri(String searchText) {
+	public static URI getSearchUri(String searchText, int page) {
 		try {
 			String queryString = UriUtils.encodeQuery(
-				"s=\"" + searchText + "\"",
+				"s=\"" + searchText + "\"" +
+				"&page=" + page,
 				"utf-8");
 			return URI.create(BASE_URI + "?" + queryString);
 		} catch (UnsupportedEncodingException e) {
